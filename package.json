@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "export": "next export",
-    "deploy": "next build && next export"
+    "build:pages": "cross-env NEXT_PUBLIC_GH_PAGES=true next build",
+    "export:pages": "cross-env NEXT_PUBLIC_GH_PAGES=true next export",
+    "deploy": "npm run build:pages && npm run export:pages"
   },
   "dependencies": {
     "@ant-design/icons": "~6.1.0",
@@ -26,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "cross-env": "^7.0.3"
   }
 }
