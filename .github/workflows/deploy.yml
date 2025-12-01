@@ -14,7 +14,6 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,7 +25,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          # 缓存配置可以保留，但确保与使用的包管理器一致
+          cache: "pnpm"
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -36,23 +36,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # === 新增：关键检查步骤 ===
+      - name: Debug - Check package.json scripts
+        run: cat package.json | grep -A 20 '"scripts"'
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           static_site_generator: next
 
-      - name: Build Next.js app
-        run: pnpm run build:pages
-
-      - name: Export static site
-        run: pnpm run export:pages
+      # === 修改：使用Next.js推荐的静态导出方式 ===
+      - name: Build Next.js app (with static export)
+        run: pnpm run build
+        # 前提：你的 next.config.js 必须已配置 `output: 'export'`
+        # 如果必须使用自定义脚本，请确保 package.json 中有 "build": "next build"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./out # Next.js 静态导出的默认输出目录
 
   deploy:
+    # ... deploy部分保持不变
     needs: build
     runs-on: ubuntu-latest
     environment:
