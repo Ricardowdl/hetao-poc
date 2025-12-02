@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ChatPage from '../components/ChatPage';
 import { scripts } from '../scripts-data';
 import type { Script, Message } from '../types';
 
-const ChatRoute: React.FC = () => {
+const ChatContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const scriptId = searchParams.get('scriptId');
@@ -84,6 +84,18 @@ const ChatRoute: React.FC = () => {
         </main>
     );
 };
+
+const ChatRoute: React.FC = () => (
+    <Suspense
+        fallback={
+            <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
+                <div className="text-gray-600">加载中...</div>
+            </main>
+        }
+    >
+        <ChatContent />
+    </Suspense>
+);
 
 export default ChatRoute;
 
