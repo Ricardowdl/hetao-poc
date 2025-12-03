@@ -44,26 +44,13 @@ const ChatContent: React.FC = () => {
         };
 
         setMessages([...messages, newUserMessage]);
+    };
 
-        // 模拟AI回复
-        setTimeout(() => {
-            const aiResponses = [
-                `你决定${content}。突然间，周围的环境开始发生变化...`,
-                `你${content}了。一个神秘的声音在你耳边响起："勇敢的冒险者，你的选择将决定故事的走向..."`,
-                `${content}之后，你发现前方出现了新的道路。你会如何选择？`,
-                `随着你的行动"${content}"，剧情发生了意想不到的转折...`
-            ];
-
-            const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-
-            const newAiMessage: Message = {
-                id: messages.length + 2,
-                content: randomResponse,
-                sender: 'ai'
-            };
-
-            setMessages(prev => [...prev, newAiMessage]);
-        }, 1000);
+    const handleReceiveAi = (content: string) => {
+        setMessages(prev => [
+            ...prev,
+            { id: prev.length + 1, content, sender: 'ai' }
+        ]);
     };
 
     if (!selectedScript) {
@@ -80,6 +67,7 @@ const ChatContent: React.FC = () => {
                 selectedScript={selectedScript}
                 messages={messages}
                 onSendMessage={handleSendMessage}
+                onReceiveAi={handleReceiveAi}
             />
         </main>
     );

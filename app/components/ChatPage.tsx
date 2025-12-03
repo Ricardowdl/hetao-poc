@@ -1,33 +1,56 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserOutlined, RobotOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { Input, Button } from 'antd';
 import { useRouter } from 'next/navigation';
 import type { Script, Message } from '../types';
+import { useApiSettingsStore } from '../store/apiSettings';
+import { sendChat } from '../api/chat';
 
 interface ChatPageProps {
   selectedScript: Script | null;
   messages: Message[];
   onSendMessage: (content: string) => void;
+  onReceiveAi: (content: string) => void;
 }
 
 const ChatPage: React.FC<ChatPageProps> = ({
   selectedScript,
   messages,
-  onSendMessage
+  onSendMessage,
+  onReceiveAi
 }) => {
   const router = useRouter();
   const [inputValue, setInputValue] = useState('');
+  const apiSettings = useApiSettingsStore((s) => s.settings);
+
+  useEffect(() => {
+    console.log('API设置', apiSettings);
+  }, [apiSettings]);
 
   const handleBack = () => {
     router.push('/');
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputValue.trim() === '') return;
-    onSendMessage(inputValue);
+    const userText = inputValue;
+    onSendMessage(userText);
     setInputValue('');
+
+    try {
+      const conversation: Message[] = [
+        ...messages,
+        { id: messages.length + 1, sender: 'user', content: userText },
+      ];
+      const reply = await sendChat(apiSettings, conversation);
+      onReceiveAi(reply);
+    } catch (error: any) {
+      const msg = String(error?.message || 'AI调用失败');
+      console.error('AI调用失败:', error);
+      alert(msg);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -119,4 +142,3 @@ const ChatPage: React.FC<ChatPageProps> = ({
 };
 
 export default ChatPage;
-

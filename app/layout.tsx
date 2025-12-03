@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "剧本互动平台",
+  title: "盒桃",
   description: "探索丰富多彩的故事世界，每一个剧本都将带你进入独特的冒险旅程",
 };
 
